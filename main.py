@@ -17,7 +17,7 @@ def clean_data(matches):
     matches.fillna({"umpire1": "Unknown", "umpire2": "Unknown", "umpire3": "Unknown"}, inplace=True)
     matches["date"] = pd.to_datetime(matches["date"])
     
-    team_name_corrections = {"Delhi Daredevils": "Delhi Capitals", "Deccan Chargers": "Sunrisers Hyderabad"}
+    team_name_corrections = {"Delhi Daredevils": "Delhi Capitals", "Deccan Chargers": "Sunrisers Hyderabad", "Rising Pune Supergiant": "Rising Pune Supergiants"}
     matches.replace({"team1": team_name_corrections, "team2": team_name_corrections, "winner": team_name_corrections}, inplace=True)
     
     return matches
@@ -43,6 +43,7 @@ if selected_option == "Total Matches Per Season":
 
 elif selected_option == "Most Successful Teams":
     st.header("Most Successful Teams")
+    st.subheader("Win Percentage of Teams: Total Wins/Total Matches Played")
     team_wins = matches["winner"].value_counts()
     matches_played = pd.concat([matches["team1"], matches["team2"]], axis=0).value_counts()
     win_percentage = (team_wins / matches_played) * 100
@@ -69,12 +70,14 @@ elif selected_option == "Top Scorers & Wicket Takers":
 
 elif selected_option == "Death Over Specialists":
     st.header("Best Death-Over Bowlers")
+    st.subheader("Death-over Bowlers: A cricketer who bowls in the final overs of a match.")
     death_overs = deliveries[(deliveries["over"] >= 16) & (deliveries["over"] <= 20)]
     death_economy = (death_overs.groupby("bowler")["total_runs"].sum() / (death_overs.groupby("bowler")["ball"].count() / 6)).sort_values().head(10)
     st.bar_chart(death_economy)
 
 elif selected_option == "Best Finishers":
     st.header("Best Finishers")
+    st.subheader("Finishers: A cricketer who bats in the final overs of a match.")
     last_5 = deliveries[(deliveries["over"] >= 16) & (deliveries["over"] <= 20)]
     finisher_sr = (last_5.groupby("batter")["batsman_runs"].sum() / last_5.groupby("batter")["ball"].count() * 100).sort_values(ascending=False).head(10)
     st.bar_chart(finisher_sr)
